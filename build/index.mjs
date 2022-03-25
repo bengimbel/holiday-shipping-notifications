@@ -2064,8 +2064,8 @@ var require_query = __commonJS({
       arity.exact(1, arguments, CreateDatabase.name);
       return new Expr({ create_database: wrap(params2) });
     }
-    function CreateIndex2(params2) {
-      arity.exact(1, arguments, CreateIndex2.name);
+    function CreateIndex(params2) {
+      arity.exact(1, arguments, CreateIndex.name);
       return new Expr({ create_index: wrap(params2) });
     }
     function CreateKey(params2) {
@@ -2267,8 +2267,8 @@ var require_query = __commonJS({
       arity.exact(1, arguments, UpperCase.name);
       return new Expr({ uppercase: wrap(value) });
     }
-    function Format(string) {
-      arity.min(1, arguments, Format.name);
+    function Format2(string) {
+      arity.min(1, arguments, Format2.name);
       var args = argsToArray(arguments);
       args.shift();
       return new Expr({ format: wrap(string), values: wrap(varargs(args)) });
@@ -2305,12 +2305,12 @@ var require_query = __commonJS({
         unit: wrap(unit)
       });
     }
-    function Date2(string) {
-      arity.exact(1, arguments, Date2.name);
+    function Date3(string) {
+      arity.exact(1, arguments, Date3.name);
       return new Expr({ date: wrap(string) });
     }
-    function Now() {
-      arity.exact(0, arguments, Now.name);
+    function Now2() {
+      arity.exact(0, arguments, Now2.name);
       return new Expr({ now: wrap(null) });
     }
     function NextId() {
@@ -2441,8 +2441,8 @@ var require_query = __commonJS({
       arity.exact(2, arguments, ContainsPath.name);
       return new Expr({ contains_path: wrap(path), in: wrap(_in) });
     }
-    function Select2(path, from, _default) {
-      arity.between(2, 3, arguments, Select2.name);
+    function Select(path, from, _default) {
+      arity.between(2, 3, arguments, Select.name);
       var exprObj = { select: wrap(path), from: wrap(from) };
       if (_default !== void 0) {
         exprObj.default = wrap(_default);
@@ -2457,8 +2457,8 @@ var require_query = __commonJS({
       arity.exact(1, arguments, Abs.name);
       return new Expr({ abs: wrap(expr) });
     }
-    function Add2() {
-      arity.min(1, arguments, Add2.name);
+    function Add() {
+      arity.min(1, arguments, Add.name);
       return new Expr({ add: wrap(varargs(arguments)) });
     }
     function BitAnd() {
@@ -2531,8 +2531,8 @@ var require_query = __commonJS({
       arity.exact(1, arguments, Count.name);
       return new Expr({ count: wrap(collection) });
     }
-    function Sum2(collection) {
-      arity.exact(1, arguments, Sum2.name);
+    function Sum(collection) {
+      arity.exact(1, arguments, Sum.name);
       return new Expr({ sum: wrap(collection) });
     }
     function Mean(collection) {
@@ -2665,8 +2665,8 @@ var require_query = __commonJS({
       arity.exact(1, arguments, ToInteger.name);
       return new Expr({ to_integer: wrap(expr) });
     }
-    function ToTime(expr) {
-      arity.exact(1, arguments, ToTime.name);
+    function ToTime2(expr) {
+      arity.exact(1, arguments, ToTime2.name);
       return new Expr({ to_time: wrap(expr) });
     }
     function ToSeconds(expr) {
@@ -2721,8 +2721,8 @@ var require_query = __commonJS({
       arity.exact(2, arguments, MoveDatabase.name);
       return new Expr({ move_database: wrap(from), to: wrap(to) });
     }
-    function Documents2(collection) {
-      arity.exact(1, arguments, Documents2.name);
+    function Documents(collection) {
+      arity.exact(1, arguments, Documents.name);
       return new Expr({ documents: wrap(collection) });
     }
     function Reverse(expr) {
@@ -2862,7 +2862,7 @@ var require_query = __commonJS({
       CreateClass: deprecate(CreateClass, "CreateClass() is deprecated, use CreateCollection() instead"),
       CreateCollection,
       CreateDatabase,
-      CreateIndex: CreateIndex2,
+      CreateIndex,
       CreateKey,
       CreateFunction,
       CreateRole,
@@ -2908,14 +2908,14 @@ var require_query = __commonJS({
       TitleCase,
       Trim,
       UpperCase,
-      Format,
+      Format: Format2,
       Time,
       TimeAdd,
       TimeSubtract,
       TimeDiff,
       Epoch,
-      Date: Date2,
-      Now,
+      Date: Date3,
+      Now: Now2,
       NextId: deprecate(NextId, "NextId() is deprecated, use NewId() instead"),
       NewId,
       Database,
@@ -2939,10 +2939,10 @@ var require_query = __commonJS({
       ContainsPath,
       ContainsField,
       ContainsValue,
-      Select: Select2,
+      Select,
       SelectAll: deprecate(SelectAll, "SelectAll() is deprecated. Avoid use."),
       Abs,
-      Add: Add2,
+      Add,
       BitAnd,
       BitNot,
       BitOr,
@@ -2960,7 +2960,7 @@ var require_query = __commonJS({
       Sqrt,
       Trunc,
       Count,
-      Sum: Sum2,
+      Sum,
       Mean,
       Any,
       All,
@@ -2993,7 +2993,7 @@ var require_query = __commonJS({
       ToArray,
       ToDouble,
       ToInteger,
-      ToTime,
+      ToTime: ToTime2,
       ToSeconds,
       ToMicros,
       ToMillis,
@@ -3007,7 +3007,7 @@ var require_query = __commonJS({
       Year,
       ToDate,
       MoveDatabase,
-      Documents: Documents2,
+      Documents,
       Reverse,
       AccessProvider,
       wrap
@@ -4361,21 +4361,47 @@ var router = new x();
 var faunaClient = new import_faunadb.default.Client({
   secret: FAUNA_SECRET
 });
-var { Create, Call, Function, CreateIndex, Collection, Documents, Lambda, Match, Map: Map2, Index, Get, Ref, Paginate, Sum, Delete, Add, Select, Let, Var, Update } = import_faunadb.default.query;
+var {
+  Create,
+  Call,
+  Format,
+  ToTime,
+  Date: Date2,
+  Now,
+  Collection,
+  Lambda,
+  Match,
+  Map: Map2,
+  Index,
+  Get,
+  Ref,
+  Paginate,
+  Delete,
+  Let,
+  Var,
+  Update
+} = import_faunadb.default.query;
+w(router.run);
 router.add("GET", "/", async (request, response) => {
   response.send(200, "hello world");
 });
-w(router.run);
 router.add("GET", "/shipping", async (request, response) => {
   try {
-    const timestampNow = new Date().getTime();
-    console.log(timestampNow, "timeStamp");
-    const shippingDateDocuments = await faunaClient.query(Call("GetDate", 6));
-    console.log(shippingDateDocuments, "shippingDateDocuments");
+    const shippingDocuments = await faunaClient.query(Map2(Paginate(Match(Index("All_shipping"))), Lambda((ref) => Get(ref))));
+    response.send(200, shippingDocuments);
+  } catch (error) {
+    const faunaError = getFaunaError(error);
+    response.send(faunaError.status, faunaError);
+  }
+});
+router.add("GET", "/shipping/current-notifications", async (request, response) => {
+  try {
+    const currentTimestamp = Format("%tQ", Now());
+    const shippingDateDocuments = await faunaClient.query(Call("GetDate", currentTimestamp));
     if (shippingDateDocuments) {
       response.send(200, shippingDateDocuments);
     } else {
-      response.send(200, false);
+      response.send(200, []);
     }
   } catch (error) {
     const faunaError = getFaunaError(error);
@@ -4387,14 +4413,41 @@ router.add("POST", "/shipping", async (request, response) => {
     const { startDate, endDate, message } = await request.body();
     const result = await faunaClient.query(Create(Collection("Shipping"), {
       data: {
-        startDate,
-        endDate,
+        startDate: Format("%tQ", ToTime(Date2(startDate))),
+        endDate: Format("%tQ", ToTime(Date2(endDate))),
         message
       }
     }));
     response.send(200, {
       shippingDocument: result.ref.id
     });
+  } catch (error) {
+    const faunaError = getFaunaError(error);
+    response.send(faunaError.status, faunaError);
+  }
+});
+router.add("PATCH", "/shipping/:shippingDateId/edit", async (request, response) => {
+  try {
+    const shippingDateId = request.params.shippingDateId;
+    const { startDate, endDate, message } = await request.body();
+    const result = await faunaClient.query(Let({ shippingRef: Ref(Collection("Shipping"), shippingDateId) }, Update(Var("shippingRef"), {
+      data: {
+        startDate,
+        endDate,
+        message
+      }
+    })));
+    response.send(200, result);
+  } catch (error) {
+    const faunaError = getFaunaError(error);
+    response.send(faunaError.status, faunaError);
+  }
+});
+router.add("DELETE", "/shipping/:shippingDateId", async (request, response) => {
+  try {
+    const shippingDateId = request.params.shippingDateId;
+    const result = await faunaClient.query(Delete(Ref(Collection("Shipping"), shippingDateId)));
+    response.send(200, result);
   } catch (error) {
     const faunaError = getFaunaError(error);
     response.send(faunaError.status, faunaError);
