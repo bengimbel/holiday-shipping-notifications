@@ -1,8 +1,15 @@
 import { Router, listen } from 'worktop';
+import * as CORS from 'worktop/cors';
 import faunadb from 'faunadb';
 import { getFaunaError } from './utils.js';
 
 const router = new Router();
+
+router.prepare = CORS.preflight({
+	origin: 'http://localhost:3000',
+	headers: ['Cache-Control', 'Content-Type', 'X-Count', "User-Agent"],
+	methods: ['GET','HEAD','PUT','PATCH','POST','DELETE']
+});
 
 const faunaClient = new faunadb.Client({
   secret: FAUNA_SECRET,
@@ -13,6 +20,10 @@ const {
   Call, 
   Format, 
   ToTime, 
+  ToDate,
+  ToInteger,
+  Select,
+  Epoch,
   Date, 
   Now, 
   Collection, 
@@ -42,7 +53,20 @@ router.add('GET', '/shipping', async (request, response) => {
         Paginate(
           Match(Index("All_shipping"))
         ),
-        Lambda(ref => Get(ref))
+        Lambda('ref', Let({
+          ref: Get(Var('ref')),
+          id: Select(['ref', 'id'], Var('ref')),
+          start: Format('%tD', ToDate(Epoch(ToInteger(Select(['data', 'startDate'], Var('ref'))), "millisecond"))),
+          end: Format('%tD', ToDate(Epoch(ToInteger(Select(['data', 'endDate'], Var('ref'))), "millisecond"))),
+          message: Select(['data', 'message'], Var('ref'))
+        },
+        {
+          id: Var('id'),
+          startDate: Var('start'),
+          endDate: Var('end'),
+          message: Var('message')
+        }
+      ))
       )
     )
 
@@ -154,6 +178,12 @@ router.add('DELETE', '/shipping/:shippingDateId', async (request, response) => {
 
 // curl \
 // --data '{"startDate": "2022-03-25", "endDate": "2022-03-26", "message": "TODAYS DATE TOMORROW EXPIRE"}' \
+// --header 'Content-Type: application/json' \
+// --request POST \
+// http://127.0.0.1:8787/shipping
+
+// curl \
+// --data '{"startDate": "2022-03-22", "endDate": "2022-03-23", "message": "TODAYS DATE TOMORROW EXPIRE"}' \
 // --header 'Content-Type: application/json' \
 // --request POST \
 // http://127.0.0.1:8787/shipping

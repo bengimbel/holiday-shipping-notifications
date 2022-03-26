@@ -2277,8 +2277,8 @@ var require_query = __commonJS({
       arity.exact(1, arguments, Time.name);
       return new Expr({ time: wrap(string) });
     }
-    function Epoch(number, unit) {
-      arity.exact(2, arguments, Epoch.name);
+    function Epoch2(number, unit) {
+      arity.exact(2, arguments, Epoch2.name);
       return new Expr({ epoch: wrap(number), unit: wrap(unit) });
     }
     function TimeAdd(base, offset, unit) {
@@ -2441,8 +2441,8 @@ var require_query = __commonJS({
       arity.exact(2, arguments, ContainsPath.name);
       return new Expr({ contains_path: wrap(path), in: wrap(_in) });
     }
-    function Select(path, from, _default) {
-      arity.between(2, 3, arguments, Select.name);
+    function Select2(path, from, _default) {
+      arity.between(2, 3, arguments, Select2.name);
       var exprObj = { select: wrap(path), from: wrap(from) };
       if (_default !== void 0) {
         exprObj.default = wrap(_default);
@@ -2661,8 +2661,8 @@ var require_query = __commonJS({
       arity.exact(1, arguments, ToDouble.name);
       return new Expr({ to_double: wrap(expr) });
     }
-    function ToInteger(expr) {
-      arity.exact(1, arguments, ToInteger.name);
+    function ToInteger2(expr) {
+      arity.exact(1, arguments, ToInteger2.name);
       return new Expr({ to_integer: wrap(expr) });
     }
     function ToTime2(expr) {
@@ -2713,8 +2713,8 @@ var require_query = __commonJS({
       arity.exact(1, arguments, Year.name);
       return new Expr({ year: wrap(expr) });
     }
-    function ToDate(expr) {
-      arity.exact(1, arguments, ToDate.name);
+    function ToDate2(expr) {
+      arity.exact(1, arguments, ToDate2.name);
       return new Expr({ to_date: wrap(expr) });
     }
     function MoveDatabase(from, to) {
@@ -2913,7 +2913,7 @@ var require_query = __commonJS({
       TimeAdd,
       TimeSubtract,
       TimeDiff,
-      Epoch,
+      Epoch: Epoch2,
       Date: Date3,
       Now: Now2,
       NextId: deprecate(NextId, "NextId() is deprecated, use NewId() instead"),
@@ -2939,7 +2939,7 @@ var require_query = __commonJS({
       ContainsPath,
       ContainsField,
       ContainsValue,
-      Select,
+      Select: Select2,
       SelectAll: deprecate(SelectAll, "SelectAll() is deprecated. Avoid use."),
       Abs,
       Add,
@@ -2992,7 +2992,7 @@ var require_query = __commonJS({
       ToObject,
       ToArray,
       ToDouble,
-      ToInteger,
+      ToInteger: ToInteger2,
       ToTime: ToTime2,
       ToSeconds,
       ToMicros,
@@ -3005,7 +3005,7 @@ var require_query = __commonJS({
       Hour,
       Month,
       Year,
-      ToDate,
+      ToDate: ToDate2,
       MoveDatabase,
       Documents,
       Reverse,
@@ -4196,9 +4196,9 @@ function parse(str, loose) {
 
 // node_modules/worktop/request/index.mjs
 function n(e) {
-  let r, t, a, o = {};
+  let r, t, a2, o = {};
   for ([r, t] of e)
-    o[r] = (a = o[r]) !== void 0 ? [].concat(a, t) : t;
+    o[r] = (a2 = o[r]) !== void 0 ? [].concat(a2, t) : t;
   return o;
 }
 async function i(e, r) {
@@ -4206,8 +4206,8 @@ async function i(e, r) {
     return ~r.indexOf("application/json") ? e.json() : ~r.indexOf("multipart/form-data") || ~r.indexOf("application/x-www-form-urlencoded") ? e.formData().then(n) : ~r.indexOf("text/") ? e.text() : e.arrayBuffer();
 }
 function f(e) {
-  let r = this, { request: t } = e, a = new URL(t.url);
-  return r.url = t.url, r.method = t.method, r.headers = t.headers, r.extend = e.waitUntil.bind(e), r.cf = t.cf, r.params = {}, r.path = a.pathname, r.hostname = a.hostname, r.origin = a.origin, r.query = a.searchParams, r.search = a.search, r.body = i.bind(0, t, r.headers.get("content-type")), r.body.blob = t.blob.bind(t), r.body.text = t.text.bind(t), r.body.arrayBuffer = t.arrayBuffer.bind(t), r.body.formData = t.formData.bind(t), r.body.json = t.json.bind(t), r;
+  let r = this, { request: t } = e, a2 = new URL(t.url);
+  return r.url = t.url, r.method = t.method, r.headers = t.headers, r.extend = e.waitUntil.bind(e), r.cf = t.cf, r.params = {}, r.path = a2.pathname, r.hostname = a2.hostname, r.origin = a2.origin, r.query = a2.searchParams, r.search = a2.search, r.body = i.bind(0, t, r.headers.get("content-type")), r.body.blob = t.blob.bind(t), r.body.text = t.text.bind(t), r.body.arrayBuffer = t.arrayBuffer.bind(t), r.body.formData = t.formData.bind(t), r.body.json = t.json.bind(t), r;
 }
 
 // node_modules/worktop/utils/index.mjs
@@ -4235,11 +4235,11 @@ function h2(u) {
     for (let d3 in t)
       r.set(d3, t[d3]);
   }, e.send = (n2, t, d3) => {
-    let a = typeof t, o = {};
+    let a2 = typeof t, o = {};
     for (let p in d3)
       o[p.toLowerCase()] = d3[p];
-    let f2 = o[i2] || e.getHeader(i2), l2 = o[s] || e.getHeader(s);
-    t == null ? t = "" : a === "object" ? (t = JSON.stringify(t), l2 = l2 || "application/json;charset=utf-8") : a !== "string" && (t = String(t)), o[s] = l2 || "text/plain", o[i2] = f2 || String(t.byteLength || h(t)), n2 === 204 || n2 === 205 || n2 === 304 ? (e.removeHeader(i2), e.removeHeader(s), delete o[i2], delete o[s], t = null) : u === "HEAD" && (t = null), e.writeHead(n2, o), e.end(t);
+    let f2 = o[i2] || e.getHeader(i2), l3 = o[s] || e.getHeader(s);
+    t == null ? t = "" : a2 === "object" ? (t = JSON.stringify(t), l3 = l3 || "application/json;charset=utf-8") : a2 !== "string" && (t = String(t)), o[s] = l3 || "text/plain", o[i2] = f2 || String(t.byteLength || h(t)), n2 === 204 || n2 === 205 || n2 === 304 ? (e.removeHeader(i2), e.removeHeader(s), delete o[i2], delete o[s], t = null) : u === "HEAD" && (t = null), e.writeHead(n2, o), e.end(t);
   }, e;
 }
 
@@ -4280,12 +4280,12 @@ async function d2(t, o, s2, r, ...e) {
     return new Response(r.body, r);
 }
 function y(t, o, s2) {
-  let r = {}, e, n2, a, i3, p;
+  let r = {}, e, n2, a2, i3, p;
   if (n2 = t[o]) {
     if (e = n2.__s[s2])
       return { params: r, handler: e.handler };
-    for ([a, i3] of n2.__d)
-      if (p = a.exec(s2), p !== null) {
+    for ([a2, i3] of n2.__d)
+      if (p = a2.exec(s2), p !== null) {
         if (p.groups !== void 0)
           for (e in p.groups)
             r[e] = p.groups[e];
@@ -4307,14 +4307,14 @@ function x() {
       }), r instanceof RegExp)
         n2.__d.set(r, { keys: [], handler: e });
       else if (/[:|*]/.test(r)) {
-        let { keys: a, pattern: i3 } = parse(r);
-        n2.__d.set(i3, { keys: a, handler: e });
+        let { keys: a2, pattern: i3 } = parse(r);
+        n2.__d.set(i3, { keys: a2, handler: e });
       } else
         n2.__s[r] = { keys: [], handler: e };
     },
     onerror(s2, r, e, n2) {
-      let a = c[e = e || 500], i3 = n2 && n2.message || a || String(e);
-      return new Response(i3, { status: e, statusText: a });
+      let a2 = c[e = e || 500], i3 = n2 && n2.message || a2 || String(e);
+      return new Response(i3, { status: e, statusText: a2 });
     },
     async run(s2) {
       let r, e = new f(s2), n2 = new h2(e.method);
@@ -4323,8 +4323,27 @@ function x() {
           return r;
         l = false;
       }
-      return r = y(o, e.method, e.path), r ? (e.params = r.params, d2(r.handler, true, e, n2).catch((a) => d2(t.onerror, true, e, n2, 500, a))) : d2(t.onerror, true, e, n2, 404);
+      return r = y(o, e.method, e.path), r ? (e.params = r.params, d2(r.handler, true, e, n2).catch((a2) => d2(t.onerror, true, e, n2, 500, a2))) : d2(t.onerror, true, e, n2, 404);
     }
+  };
+}
+
+// node_modules/worktop/cors/index.mjs
+var a = {
+  origin: "*",
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+  headers: [],
+  expose: []
+};
+function l2(o, t, s2) {
+  let e = t ? { ...a, ...t } : a;
+  o.setHeader("Access-Control-Allow-Origin", e.origin), e.origin !== "*" && o.headers.append("Vary", "Origin"), e.credentials && o.setHeader("Access-Control-Allow-Credentials", "true"), e.expose.length && o.setHeader("Access-Control-Expose-Headers", e.expose), s2 && (e.maxage != null && o.setHeader("Access-Control-Max-Age", e.maxage), e.methods.length && o.setHeader("Access-Control-Allow-Methods", e.methods), e.headers.length && o.setHeader("Access-Control-Allow-Headers", e.headers));
+}
+function g(o = {}) {
+  let t = o.origin = o.origin || "*", s2 = typeof t == "string";
+  return function(e, i3) {
+    let r, n2 = e.method === "OPTIONS";
+    s2 || (r = e.headers.get("Origin") || "", o.origin = t === true && r || t instanceof RegExp && t.test(r) && r || "false"), l2(i3, o, n2), n2 && (o.headers || (r = e.headers.get("Access-Control-Request-Headers"), r && i3.setHeader("Access-Control-Allow-Headers", r), i3.headers.append("Vary", "Access-Control-Request-Headers")), i3.statusCode = 204, i3.end(null));
   };
 }
 
@@ -4358,6 +4377,11 @@ function getFaunaError(error) {
 
 // index.js
 var router = new x();
+router.prepare = g({
+  origin: "http://localhost:3000",
+  headers: ["Cache-Control", "Content-Type", "X-Count", "User-Agent"],
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"]
+});
 var faunaClient = new import_faunadb.default.Client({
   secret: FAUNA_SECRET
 });
@@ -4366,6 +4390,10 @@ var {
   Call,
   Format,
   ToTime,
+  ToDate,
+  ToInteger,
+  Select,
+  Epoch,
   Date: Date2,
   Now,
   Collection,
@@ -4387,7 +4415,18 @@ router.add("GET", "/", async (request, response) => {
 });
 router.add("GET", "/shipping", async (request, response) => {
   try {
-    const shippingDocuments = await faunaClient.query(Map2(Paginate(Match(Index("All_shipping"))), Lambda((ref) => Get(ref))));
+    const shippingDocuments = await faunaClient.query(Map2(Paginate(Match(Index("All_shipping"))), Lambda("ref", Let({
+      ref: Get(Var("ref")),
+      id: Select(["ref", "id"], Var("ref")),
+      start: Format("%tD", ToDate(Epoch(ToInteger(Select(["data", "startDate"], Var("ref"))), "millisecond"))),
+      end: Format("%tD", ToDate(Epoch(ToInteger(Select(["data", "endDate"], Var("ref"))), "millisecond"))),
+      message: Select(["data", "message"], Var("ref"))
+    }, {
+      id: Var("id"),
+      startDate: Var("start"),
+      endDate: Var("end"),
+      message: Var("message")
+    }))));
     response.send(200, shippingDocuments);
   } catch (error) {
     const faunaError = getFaunaError(error);
