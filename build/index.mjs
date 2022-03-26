@@ -1858,8 +1858,8 @@ var require_query = __commonJS({
     function _lambdaExpr(var_name, expr) {
       return new Expr({ lambda: wrap(var_name), expr: wrap(expr) });
     }
-    function Call2(ref) {
-      arity.min(1, arguments, Call2.name);
+    function Call(ref) {
+      arity.min(1, arguments, Call.name);
       var args = argsToArray(arguments);
       args.shift();
       return new Expr({ call: wrap(ref), arguments: wrap(varargs(args)) });
@@ -1876,8 +1876,8 @@ var require_query = __commonJS({
       arity.exact(2, arguments, Foreach.name);
       return new Expr({ foreach: wrap(lambda_expr), collection: wrap(collection) });
     }
-    function Filter(collection, lambda_expr) {
-      arity.exact(2, arguments, Filter.name);
+    function Filter2(collection, lambda_expr) {
+      arity.exact(2, arguments, Filter2.name);
       return new Expr({ filter: wrap(lambda_expr), collection: wrap(collection) });
     }
     function Take(number, collection) {
@@ -2617,20 +2617,20 @@ var require_query = __commonJS({
       arity.min(1, arguments, LT.name);
       return new Expr({ lt: wrap(varargs(arguments)) });
     }
-    function LTE() {
-      arity.min(1, arguments, LTE.name);
+    function LTE2() {
+      arity.min(1, arguments, LTE2.name);
       return new Expr({ lte: wrap(varargs(arguments)) });
     }
     function GT() {
       arity.min(1, arguments, GT.name);
       return new Expr({ gt: wrap(varargs(arguments)) });
     }
-    function GTE() {
-      arity.min(1, arguments, GTE.name);
+    function GTE2() {
+      arity.min(1, arguments, GTE2.name);
       return new Expr({ gte: wrap(varargs(arguments)) });
     }
-    function And() {
-      arity.min(1, arguments, And.name);
+    function And2() {
+      arity.min(1, arguments, And2.name);
       return new Expr({ and: wrap(varargs(arguments)) });
     }
     function Or() {
@@ -2814,11 +2814,11 @@ var require_query = __commonJS({
       Do,
       Object: objectFunction,
       Lambda: Lambda2,
-      Call: Call2,
+      Call,
       Query,
       Map: Map3,
       Foreach,
-      Filter,
+      Filter: Filter2,
       Take,
       Drop,
       Prepend,
@@ -2981,10 +2981,10 @@ var require_query = __commonJS({
       Tan,
       Tanh,
       LT,
-      LTE,
+      LTE: LTE2,
       GT,
-      GTE,
-      And,
+      GTE: GTE2,
+      And: And2,
       Or,
       Not,
       ToString,
@@ -4387,7 +4387,6 @@ var faunaClient = new import_faunadb.default.Client({
 });
 var {
   Create,
-  Call,
   Format,
   ToTime,
   ToDate,
@@ -4435,13 +4434,8 @@ router.add("GET", "/shipping", async (request, response) => {
 });
 router.add("GET", "/shipping/current-notifications", async (request, response) => {
   try {
-    const currentTimestamp = Format("%tQ", Now());
-    const shippingDateDocuments = await faunaClient.query(Call("GetDate", currentTimestamp));
-    if (shippingDateDocuments) {
-      response.send(200, shippingDateDocuments);
-    } else {
-      response.send(200, []);
-    }
+    const shippingDateDocuments = await faunaClient.query(Map2(Paginate(Filter(Match(Index("Shipping_periods")), Lambda(["startDate", "endDate", "ref"], And(LTE(Var("startDate"), Format("%tQ", Now())), GTE(Var("endDate"), Format("%tQ", Now())))))), Lambda(["startDate", "endDate", "ref"], Get(Var("ref")))));
+    response.send(200, shippingDateDocuments);
   } catch (error) {
     const faunaError = getFaunaError(error);
     response.send(faunaError.status, faunaError);

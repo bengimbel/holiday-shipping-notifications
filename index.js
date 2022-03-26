@@ -17,7 +17,6 @@ const faunaClient = new faunadb.Client({
 
 const { 
   Create, 
-  Call, 
   Format, 
   ToTime, 
   ToDate,
@@ -80,14 +79,25 @@ router.add('GET', '/shipping', async (request, response) => {
 
 router.add('GET', '/shipping/current-notifications', async (request, response) => {
   try {
-   const currentTimestamp = Format('%tQ', Now())
-   const shippingDateDocuments = await faunaClient.query(Call("GetDate", currentTimestamp))
+    const shippingDateDocuments = await faunaClient.query(
+      Map(
+        Paginate(
+          Filter(
+            Match(Index("Shipping_periods")),
+            Lambda(
+              ["startDate", "endDate", "ref"],
+              And(
+                LTE(Var("startDate"), Format("%tQ", Now())),
+                GTE(Var("endDate"), Format("%tQ", Now()))
+              )
+            )
+          )
+        ),
+        Lambda(["startDate", "endDate", "ref"], Get(Var("ref")))
+      )
+    )
 
-    if (shippingDateDocuments) {
-      response.send(200, shippingDateDocuments);
-    } else {
-      response.send(200, []);
-    }
+    response.send(200, shippingDateDocuments);
 
   } catch (error) {
     const faunaError = getFaunaError(error);
@@ -183,7 +193,7 @@ router.add('DELETE', '/shipping/:shippingDateId', async (request, response) => {
 // http://127.0.0.1:8787/shipping
 
 // curl \
-// --data '{"startDate": "2022-03-22", "endDate": "2022-03-23", "message": "TODAYS DATE TOMORROW EXPIRE"}' \
+// --data '{"startDate": "2022-03-26", "endDate": "2022-03-27", "message": "TODAYS DATE TOMORROW EXPIRE"}' \
 // --header 'Content-Type: application/json' \
 // --request POST \
 // http://127.0.0.1:8787/shipping
